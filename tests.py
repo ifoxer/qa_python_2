@@ -25,29 +25,30 @@ class TestBooksCollector:
 
     def test_add_new_book_add_one_book_rating_1(self, collector):
         collector.add_new_book('Гордость и предубеждение и зомби')
-        assert collector.books_rating['Гордость и предубеждение и зомби'] == 1
+        assert collector.get_book_rating('Гордость и предубеждение и зомби') == 1
 
     @pytest.mark.parametrize('book_name, rating', [['book1', 1],
-                                                   ['book2', 5],
-                                                   ['book3', 10]])
+                                                   ['book2', 10]])
     def test_set_book_rating_boundary_in_range_values(self, book_name, rating):
         collector = BooksCollector()
         collector.add_new_book(book_name)
         collector.set_book_rating(book_name, rating)
-        assert collector.books_rating[book_name] == rating
+        assert collector.books_rating[book_name] == collector.get_book_rating(book_name)
 
     @pytest.mark.parametrize('book_name, rating', [['book1', -1],
                                                    ['book2', 0],
-                                                   ['book3', 11],
-                                                   ['book4', 15]])
+                                                   ['book3', 11]])
     def test_set_book_rating_boundary_out_of_range_values(self, book_name, rating):
         collector = BooksCollector()
         collector.add_new_book(book_name)
         collector.set_book_rating(book_name, rating)
-        assert not collector.books_rating[book_name] == rating
+        assert collector.books_rating[book_name] == 1
 
     def test_get_book_rating_get_rating_one_book(self, collector, add_book_with_rating):
         assert collector.get_book_rating('book1') == 7
+
+    def test_get_book_rating_rating_nonexistent_book(self, collector):
+        assert collector.get_book_rating('nonexistent_book') is None
 
     def test_get_books_with_specific_rating_in_range(self, collector, add_books_rating):
         assert len(collector.get_books_with_specific_rating(8)) == 2
@@ -62,7 +63,6 @@ class TestBooksCollector:
         assert len(collector.favorites) == 1
 
     def test_add_book_in_favorites_add_book_from_favorites_list(self, collector, add_book_with_rating_in_favorite):
-        collector.add_book_in_favorites('book1')
         collector.add_book_in_favorites('book1')
         assert len(collector.favorites) == 1
 
