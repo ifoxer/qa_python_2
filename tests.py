@@ -33,7 +33,7 @@ class TestBooksCollector:
         collector = BooksCollector()
         collector.add_new_book(book_name)
         collector.set_book_rating(book_name, rating)
-        assert collector.books_rating[book_name] == collector.get_book_rating(book_name)
+        assert collector.get_book_rating(book_name) == rating
 
     @pytest.mark.parametrize('book_name, rating', [['book1', -1],
                                                    ['book2', 0],
@@ -42,7 +42,7 @@ class TestBooksCollector:
         collector = BooksCollector()
         collector.add_new_book(book_name)
         collector.set_book_rating(book_name, rating)
-        assert collector.books_rating[book_name] == 1
+        assert collector.get_book_rating(book_name) == 1
 
     def test_get_book_rating_get_rating_one_book(self, collector, add_book_with_rating):
         assert collector.get_book_rating('book1') == 7
@@ -60,19 +60,19 @@ class TestBooksCollector:
         assert len(collector.get_books_rating()) == 5
 
     def test_add_book_in_favorites_add_one_book_in_favorites_list(self, collector, add_book_with_rating_in_favorite):
-        assert len(collector.favorites) == 1
+        assert len(collector.get_list_of_favorites_books()) == 1
 
     def test_add_book_in_favorites_add_book_from_favorites_list(self, collector, add_book_with_rating_in_favorite):
         collector.add_book_in_favorites('book1')
-        assert len(collector.favorites) == 1
+        assert 'book1' in collector.get_list_of_favorites_books()
 
     def test_delete_book_from_favorites_delete_one_book(self, collector, add_book_with_rating_in_favorite):
         collector.delete_book_from_favorites('book1')
-        assert len(collector.favorites) == 0
+        assert 'book1' not in collector.get_list_of_favorites_books()
 
     def test_delete_book_from_favorites_delete_book_is_not_from_list(self, collector, add_book_with_rating_in_favorite):
         collector.delete_book_from_favorites('book2')
-        assert len(collector.favorites) == 1
+        assert 'book2' not in collector.get_list_of_favorites_books()
 
     def test_get_list_of_favorites_books(self, collector, add_favorites_books):
         assert len(collector.get_list_of_favorites_books()) == 5
